@@ -19,7 +19,6 @@ class RatWebsocket implements MessageComponentInterface {
     }
 
     public function onMessage(ConnectionInterface $from, $msg) {
-        echo $msg;
         if (!$from->hasShakeHand) {
             $from->send($this->upgrade($from, $msg));
             $from->hasShakeHand = true;
