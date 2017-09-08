@@ -1,0 +1,43 @@
+<html>
+<head>
+    <title>chat</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+    Welcome<br/><input id="text" type="text"/>
+    <button onclick="send()">发送消息</button>
+    <hr/>
+    <div id="message">
+    </div>
+</body>
+<script type="text/javascript">
+    var websocket = null;
+    websocket = new WebSocket("ws://localhost:8078/websocketDemo/index.php");
+    // websocket = new WebSocket("ws://localhost:8078/websocketDemo/backend/WebSocketServer.php");
+
+    websocket.onerror = function () {
+        setMessageInnerHTML("WebSocket连接发生错误");
+    };
+
+    websocket.onopen = function () {
+        setMessageInnerHTML("WebSocket连接成功");
+    }
+
+    websocket.onmessage = function (event) {
+        setMessageInnerHTML(event.data);
+    }
+
+    websocket.onclose = function () {
+        setMessageInnerHTML("WebSocke连接关闭");
+    }
+
+    function setMessageInnerHTML(innerHTML) {
+        document.getElementById('message').innerHTML += innerHTML + '<br/>';
+    }
+
+    function send() {
+        var message = document.getElementById('text').value;
+        websocket.send(message);
+    }
+</script>
+</html>

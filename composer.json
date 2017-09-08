@@ -1,0 +1,8 @@
+{
+  "autoload": {
+    "psr-4": {"backend\\": "backend/"}
+  },
+  "require": {
+    "cboden/ratchet": "^0.3.6"
+  }
+}
