@@ -26,8 +26,7 @@
         }
     }
 
-    function send($message)
-    {
+    function send($message) {
         global $clients;
         $msg = frame($message);
         foreach ($clients as $client) {
