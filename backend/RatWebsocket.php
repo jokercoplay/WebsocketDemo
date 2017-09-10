@@ -19,6 +19,7 @@ class RatWebsocket implements MessageComponentInterface {
     }
 
     public function onMessage(ConnectionInterface $from, $msg) {
+        echo json_encode($from) . "\n";
         if (!$from->hasShakeHand) {
             $from->send($this->upgrade($from, $msg));
             $from->hasShakeHand = true;
