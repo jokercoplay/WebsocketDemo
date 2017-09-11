@@ -27,7 +27,8 @@
         setMessageInnerHTML(event.data);
     }
 
-    websocket.onclose = function () {
+    websocket.onclose = function (event) {
+        console.log(event);
         setMessageInnerHTML("WebSocke连接关闭");
     }
 

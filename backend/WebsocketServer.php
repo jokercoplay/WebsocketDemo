@@ -8,10 +8,23 @@
     while (true) {
         $newSocket = socket_accept($socket);
         array_push($clients, $newSocket);
-
         $header = socket_read($newSocket, 1024);
         upgrade($newSocket, $header);
         echo $newSocket . ' connected--- ';
+        // foreach ($clients as $client) {
+        //     if ($msgLength = socket_recv($client, $buffer, 2048, 0)) {
+        //         echo $msgLength;
+        //     }
+        // }
+        // foreach ($clients as $client) {
+        //     if ($msgLength == 8) {
+        //         unset($clients[1]);
+        //     } else {
+        //         foreach ($clients as $client) {
+        //             send(decode($buffer));
+        //         }
+        //     }
+        // }
     }
 
     function upgrade($socket, $data)
