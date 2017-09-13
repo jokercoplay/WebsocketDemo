@@ -12,8 +12,9 @@
 </body>
 <script type="text/javascript">
     var websocket = null;
-    websocket = new WebSocket("ws://localhost:8078/websocketDemo/index.php");
-    // websocket = new WebSocket("ws://localhost:8078/websocketDemo/backend/WebSocketServer.php");
+    // websocket = new WebSocket("ws://localhost:8078/websocketDemo/index.php");
+    websocket = new WebSocket("ws://localhost:8078/websocketDemo/backend/WebSocketServer.php");
+    // websocket = new WebSocket("ws://localhost:8078/websocketDemo/backend/JavaWebsocketServer.java");
 
     websocket.onerror = function () {
         setMessageInnerHTML("WebSocket连接发生错误");
@@ -28,7 +29,6 @@
     }
 
     websocket.onclose = function (event) {
-        console.log(event);
         setMessageInnerHTML("WebSocke连接关闭");
     }
 

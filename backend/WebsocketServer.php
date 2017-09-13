@@ -1,30 +1,30 @@
 <?php
-    $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-    socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
-    socket_bind($socket, '127.0.0.1', '8078');
-    socket_listen($socket);
-    $clients = [];
+    $master = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+    socket_set_option($master, SOL_SOCKET, SO_REUSEADDR, 1);
+    socket_bind($master, '127.0.0.1', '8078');
+    socket_listen($master);
+    $sockets = [];
+    array_push($sockets, $master);
 
     while (true) {
-        $newSocket = socket_accept($socket);
-        array_push($clients, $newSocket);
-        $header = socket_read($newSocket, 1024);
-        upgrade($newSocket, $header);
-        echo $newSocket . ' connected--- ';
-        // foreach ($clients as $client) {
-        //     if ($msgLength = socket_recv($client, $buffer, 2048, 0)) {
-        //         echo $msgLength;
-        //     }
-        // }
-        // foreach ($clients as $client) {
-        //     if ($msgLength == 8) {
-        //         unset($clients[1]);
-        //     } else {
-        //         foreach ($clients as $client) {
-        //             send(decode($buffer));
-        //         }
-        //     }
-        // }
+        $write = null;
+        $except = null;
+        echo sizeof($sockets) . "\n";
+        socket_select($sockets, $write, $except, null);
+        echo sizeof($sockets) . "\n";
+        foreach ($sockets as $socket) {
+            if ($socket == $master) {
+                $client = socket_accept($master);
+                $header = socket_read($client, 1024);
+                upgrade($client, $header);
+                array_push($sockets, $client);
+                echo $client . " connected \n";
+            } else {
+                $bufferLength = socket_recv($socket, $message, 2048, 0);
+                send($message);
+                break;
+            }
+        }
     }
 
     function upgrade($socket, $data)
@@ -39,13 +39,12 @@
         }
     }
 
-    function send($message)
-    {
-        global $clients;
-        $msg = frame($message);
+    function send($message) {
+        global $sockets;
+        $clients = $sockets;
+        $msg = frame(decode($message));
         foreach ($clients as $client) {
             socket_write($client, $msg, strlen($msg));
-            echo $client . ' send' . $msg;
         }
     }
 
