@@ -1,7 +1,7 @@
 <?php
     $master = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
     socket_set_option($master, SOL_SOCKET, SO_REUSEADDR, 1);
-    socket_bind($master, '127.0.0.1', '8078');
+    socket_bind($master, '192.168.225.143', '8078');
     socket_listen($master);
     socket_set_nonblock($master);
     $sockets = [];
