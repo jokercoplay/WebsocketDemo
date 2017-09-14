@@ -1,30 +1,41 @@
+package websocketDemo;
+
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.websocket.*;
+import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
-@ServerEndpoint("/websocket")
-public class JavaWebsocketServer {
-    private static List<JavaWebsocketServer> webSocketList = new ArrayList<JavaWebsocketServer>();
+@ServerEndpoint("/websocket/{param}")
+public class WebsocketServer { 
+    private static Map<String, ArrayList<WebsocketServer>> webSocketMap = new HashMap<String, ArrayList<WebsocketServer>>();
 
     private Session session;
+    private String channel;
 
     @OnOpen
-    public void onOpen(Session session){
-        webSocketList.add(this);
-        System.out.println("有新连接加入！");
+    public void onOpen(@PathParam(value="param") String param, Session session){
+        this.session = session;
+        this.channel = param;
+        if (!webSocketMap.containsKey(channel)) {
+        	webSocketMap.put(channel, new ArrayList());
+        }
+        webSocketMap.get(channel).add(this);
+        System.out.println("所在频道为" + channel);
     }
 
     @OnClose
     public void onClose(){
-        webSocketList.remove(this);
-        System.out.println("有一连接关闭！");
+    	webSocketMap.get(channel).remove(this);
+        System.out.println(channel + "频道有一人退出,当前在线" + webSocketMap.get(channel).size() + "人");
     }
 
     @OnMessage
     public void onMessage(String message, Session session) {
-        System.out.println("来自客户端的消息:" + message);
-        for(JavaWebsocketServer item: webSocketList){
+        for(WebsocketServer item: webSocketMap.get(channel)){
             try {
                 item.sendMessage(message);
             } catch (IOException e) {
