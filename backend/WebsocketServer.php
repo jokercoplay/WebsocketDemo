@@ -3,26 +3,27 @@
     socket_set_option($master, SOL_SOCKET, SO_REUSEADDR, 1);
     socket_bind($master, '127.0.0.1', '8078');
     socket_listen($master);
+    socket_set_nonblock($master);
     $sockets = [];
     array_push($sockets, $master);
 
     while (true) {
-        $write = null;
-        $except = null;
-        echo sizeof($sockets) . "\n";
-        socket_select($sockets, $write, $except, null);
-        echo sizeof($sockets) . "\n";
         foreach ($sockets as $socket) {
-            if ($socket == $master) {
-                $client = socket_accept($master);
-                $header = socket_read($client, 1024);
-                upgrade($client, $header);
-                array_push($sockets, $client);
-                echo $client . " connected \n";
+            if ($socket === $master) {
+                if ($client = socket_accept($master)) {
+                    $header = socket_read($client, 1024);
+                    upgrade($client, $header);
+                    array_push($sockets, $client);
+                    echo $client . " connected \n";
+                }
             } else {
-                $bufferLength = socket_recv($socket, $message, 2048, 0);
-                send($message);
-                break;
+                $msgLength = socket_recv($socket, $message, 2048, MSG_DONTWAIT);
+                if ($msgLength < 7 && $msgLength > 0) {
+                    unset($sockets[array_keys($sockets, $socket)[0]]);
+                    echo $socket . "disconnect \n" . sizeof($sockets);
+                } elseif (!$msgLength == 0) {
+                   send($message);
+                }
             }
         }
     }
@@ -42,6 +43,7 @@
     function send($message) {
         global $sockets;
         $clients = $sockets;
+        unset($clients[0]);
         $msg = frame(decode($message));
         foreach ($clients as $client) {
             socket_write($client, $msg, strlen($msg));

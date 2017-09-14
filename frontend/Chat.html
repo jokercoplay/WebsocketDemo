@@ -1,11 +1,14 @@
 <html>
+
 <head>
     <title>chat</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
+
 <body>
-    Welcome<br/><input id="text" type="text"/>
+    Welcome<br/><input id="text" type="text" />
     <button onclick="send()">发送消息</button>
+    <!-- <button onclick="closeWebSocket()">关闭连接</button> -->
     <hr/>
     <div id="message">
     </div>
@@ -29,7 +32,7 @@
     }
 
     websocket.onclose = function (event) {
-        setMessageInnerHTML("WebSocke连接关闭");
+        setMessageInnerHTML("WebSocket连接关闭");
     }
 
     function setMessageInnerHTML(innerHTML) {
@@ -40,5 +43,15 @@
         var message = document.getElementById('text').value;
         websocket.send(message);
     }
+
+    window.onbeforeunload = function () {
+        closeWebSocket();
+    }
+
+    function closeWebSocket() {
+        websocket.close();
+    }
+
 </script>
+
 </html>
