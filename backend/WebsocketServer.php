@@ -14,13 +14,13 @@
                     $header = socket_read($client, 1024);
                     upgrade($client, $header);
                     array_push($sockets, $client);
-                    echo $client . " connected \n";
+                    echo $client . " connected\n";
                 }
             } else {
                 $msgLength = socket_recv($socket, $message, 2048, MSG_DONTWAIT);
                 if ($msgLength < 7 && $msgLength > 0) {
                     unset($sockets[array_keys($sockets, $socket)[0]]);
-                    echo $socket . "disconnect \n" . sizeof($sockets);
+                    echo $socket . "disconnect   now" . sizeof($sockets) . "exist\n";
                 } elseif (!$msgLength == 0) {
                    send($message);
                 }
